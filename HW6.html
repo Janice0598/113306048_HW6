@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1A2B Game</title>
+    <link rel="stylesheet" href="hw6.css">
+</head>
+<body>
+    <h1>113306048_HW6_1A2B</h1>
+
+    <input type="text" id="guessInput" placeholder="輸入4個不重複的數字">
+    <button onclick="checkGuess()">猜!</button>
+    <p id="message"></p>
+
+    <div id="log">
+        <h3>猜測記錄：</h3>
+        <ul id="guessLog"></ul>
+    </div>
+
+    <script>
+        let answer = generateAnswer();
+        let attempts = 0;
+
+        function generateAnswer() {
+            const numbers = Array.from({ length: 10 }, (_, i) => i);
+            const result = [];
+            for (let i = 0; i < 4; i++) {
+                const index = Math.floor(Math.random() * numbers.length);
+                result.push(numbers.splice(index, 1)[0]);
+            }
+            return result;
+        }
+
+        function checkGuess() {
+            const guessInput = document.getElementById("guessInput");
+            const message = document.getElementById("message");
+            const guessLog = document.getElementById("guessLog");
+
+            const guess = guessInput.value.trim();
+            if (!/^[0-9]{4}$/.test(guess) || new Set(guess).size !== 4) {
+                alert("請輸入4個不重複的數字！");
+                return;
+            }
+
+            const guessArray = guess.split("").map(Number);
+            let aCount = 0, bCount = 0;
+
+            for (let i = 0; i < 4; i++) {
+                if (guessArray[i] === answer[i]) {
+                    aCount++;
+                } else if (answer.includes(guessArray[i])) {
+                    bCount++;
+                }
+            }
+
+            attempts++;
+            const result = `第${attempts}次: ${guess} -> ${aCount}A${bCount}B`;
+            const listItem = document.createElement("li");
+            listItem.textContent = result;
+            guessLog.appendChild(listItem);
+
+            if (aCount === 4) {
+                alert(`答對了！總共猜了 ${attempts} 次。`);
+                resetGame();
+            } else {
+                message.textContent = "繼續加油！";
+            }
+
+            guessInput.value = "";
+        }
+
+        function resetGame() {
+            answer = generateAnswer();
+            attempts = 0;
+            document.getElementById("guessLog").innerHTML = "";
+            document.getElementById("message").textContent = "";
+        }
+    </script>
+</body>
+</html>
